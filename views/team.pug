@@ -1,4 +1,3 @@
-
 extends layout
 
 block content
@@ -8,8 +7,9 @@ block content
           span.navbar-toggler-icon
       #navbarSupportedContent.collapse.navbar-collapse
           ul.navbar-nav.mr-auto
-              li.nav-item
+              li.nav-item.active
                   a.nav-link(href='/team') My Team 
+                  span.sr-only (current)
               li.nav-item
                   a.nav-link(href='/matchup') Matchup
               li.nav-item
@@ -18,4 +18,3 @@ block content
                   a.nav-link(href='/league') League
               li.nav-item
                   a.nav-link(href='/trades') Trade Requests
-  h1 Welcome to Blockchain Keeper!
