@@ -25,12 +25,8 @@ block content
             th(scope='col') Player
             th(scope='col') W-L-T
         tbody
-            tr
-            th(scope='row') 1
-            td Kunj
-            td 10-4-2
-            tr
-            th(scope='row') 2
-            td Parth
-            td 8-5-3
-            tr
+            each user in users
+                tr
+                    th(scope='row')=user.rank
+                    td=user.name
+                    td=user.score

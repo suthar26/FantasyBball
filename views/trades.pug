@@ -22,22 +22,23 @@ block content
     .col-md-12
         h1.bold Pending Sent Trade Requests
     .col-md-12
-        table.table.table-striped
+        table.table
             thead
                 tr
                     th To
                     th Your Player(s)
                     th Their Player(s)
             tbody
-                tr
-                    td Parth
-                    td Steph Curry, Marcus Smart
-                    td James Harden
+                each trade in sentTrades
+                    tr
+                        td=trade.to
+                        td=trade.sendPlayers
+                        td=trade.getPlayers
 
     .col-md-12
         h1.bold Received Trade Requests
     .col-md-12
-        table.table.table-striped
+        table.table
             thead
                 tr
                     th From
@@ -45,11 +46,12 @@ block content
                     th Their Player(s)
                     th(colspan='2')
             tbody
-                tr
-                    td Parth
-                    td Steph Curry, Marcus Smart
-                    td James Harden
-                    td
-                        button.btn.btn-success(type='button') Accept
-                    td
-                        button.btn.btn-danger(type='button') Decline
+                each trade in recievedTrades
+                    tr
+                        td=trade.from
+                        td=trade.sendPlayers
+                        td=trade.getPlayers
+                        td
+                            button.btn.btn-success(type='button') Accept
+                        td
+                            button.btn.btn-danger(type='button') Decline

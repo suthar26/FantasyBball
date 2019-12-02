@@ -24,11 +24,11 @@ block content
     .col-md-12
         table.table
             tr
-                th(style='text-align:left; width:20%')  Kunj
-                th(style='text-align:right; width:20%')  4
+                th(style='text-align:left; width:20%')=you.name
+                th(style='text-align:right; width:20%')=you.score
                 th(style='text-align:center; width:20%')  VS
-                th(style='text-align:left; width:20%')  4
-                th(style='text-align:right; width:20%')  Parth
+                th(style='text-align:left; width:20%')=opp.score
+                th(style='text-align:right; width:20%')=opp.name
     
 
     .col-md-12
@@ -37,38 +37,38 @@ block content
         table.table
             tbody
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.fgp
                     td(style='text-align:center; width:30%') FG%
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.fgp
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.ftp
                     td(style='text-align:center; width:30%') FT%
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.ftp
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.three
                     td(style='text-align:center; width:30%') 3PTM
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.three
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.pts
                     td(style='text-align:center; width:30%') PTS
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.pts
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.reb
                     td(style='text-align:center; width:30%') REB
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.reb
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.ast
                     td(style='text-align:center; width:30%') AST
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.ast
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.st
                     td(style='text-align:center; width:30%') ST
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.st
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.blk
                     td(style='text-align:center; width:30%') BLK
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.blk
                 tr
-                    td(style='text-align:left; width:35%') .479
+                    td(style='text-align:left; width:35%')=you.to
                     td(style='text-align:center; width:30%') TO
-                    td(style='text-align:right; width:35%') .417
+                    td(style='text-align:right; width:35%')=opp.to

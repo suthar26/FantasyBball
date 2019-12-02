@@ -25,7 +25,6 @@ block content
         table.table
             thead
                 tr
-                    th Position
                     th Name
                     th FT%
                     th FG%
@@ -36,12 +35,10 @@ block content
                     th ST
                     th BLK
                     th TO
-                    th Possible Positions
                     th Today Game
             tbody
                 each player in players
                     tr
-                        td placeholder
                         td=player.name
                         td=player.ftp
                         td=player.fgp
@@ -52,5 +49,4 @@ block content
                         td=player.st
                         td=player.blk
                         td=player.to
-                        td=player.positions
                         td=player.game
