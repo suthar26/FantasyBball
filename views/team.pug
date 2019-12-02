@@ -1,20 +1,55 @@
 extends layout
 
 block content
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light
-      a.navbar-brand(href='/') Blockchain Keeper
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
-          span.navbar-toggler-icon
-      #navbarSupportedContent.collapse.navbar-collapse
-          ul.navbar-nav.mr-auto
-              li.nav-item.active
-                  a.nav-link(href='/team') My Team 
-                  span.sr-only (current)
-              li.nav-item
-                  a.nav-link(href='/matchup') Matchup
-              li.nav-item
-                  a.nav-link(href='/players') Players
-              li.nav-item
-                  a.nav-link(href='/league') League
-              li.nav-item
-                  a.nav-link(href='/trades') Trade Requests
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        a.navbar-brand(href='/') Blockchain Keeper
+        button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
+            span.navbar-toggler-icon
+        #navbarSupportedContent.collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+                li.nav-item.active
+                    a.nav-link(href='/team') My Team 
+                    span.sr-only (current)
+                li.nav-item
+                    a.nav-link(href='/matchup') Matchup
+                li.nav-item
+                    a.nav-link(href='/players') Players
+                li.nav-item
+                    a.nav-link(href='/league') League
+                li.nav-item
+                    a.nav-link(href='/trades') Trade Requests
+
+    .col-md-12
+    h1.bold(style='text-align:center') My Team
+    .col-md-12
+        table.table
+            thead
+                tr
+                    th Position
+                    th Name
+                    th FT%
+                    th FG%
+                    th 3PT
+                    th PTS
+                    th REB
+                    th AST
+                    th ST
+                    th BLK
+                    th TO
+                    th Possible Positions
+                    th Today Game
+            tbody
+                tr
+                    td PF
+                    td Lebron James
+                    td .900
+                    td .600
+                    td 4
+                    td 20
+                    td 7
+                    td 6
+                    td 0
+                    td 1
+                    td 2
+                    td SF/PF
+                    td 6 PM vs UTA

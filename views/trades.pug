@@ -1,20 +1,55 @@
 extends layout
 
 block content
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light
-      a.navbar-brand(href='/') Blockchain Keeper
-      button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
-          span.navbar-toggler-icon
-      #navbarSupportedContent.collapse.navbar-collapse
-          ul.navbar-nav.mr-auto
-              li.nav-item
-                  a.nav-link(href='/team') My Team 
-              li.nav-item
-                  a.nav-link(href='/matchup') Matchup
-              li.nav-item
-                  a.nav-link(href='/players') Players
-              li.nav-item
-                  a.nav-link(href='/league') League
-              li.nav-item.active
-                  a.nav-link(href='/trades') Trade Requests
-                  span.sr-only (current)
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        a.navbar-brand(href='/') Blockchain Keeper
+        button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
+            span.navbar-toggler-icon
+        #navbarSupportedContent.collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+                li.nav-item
+                    a.nav-link(href='/team') My Team 
+                li.nav-item
+                    a.nav-link(href='/matchup') Matchup
+                li.nav-item
+                    a.nav-link(href='/players') Players
+                li.nav-item
+                    a.nav-link(href='/league') League
+                li.nav-item.active
+                    a.nav-link(href='/trades') Trade Requests
+                    span.sr-only (current)
+
+    .col-md-12
+        h1.bold Pending Sent Trade Requests
+    .col-md-12
+        table.table.table-striped
+            thead
+                tr
+                    th To
+                    th Your Player(s)
+                    th Their Player(s)
+            tbody
+                tr
+                    td Parth
+                    td Steph Curry, Marcus Smart
+                    td James Harden
+
+    .col-md-12
+        h1.bold Received Trade Requests
+    .col-md-12
+        table.table.table-striped
+            thead
+                tr
+                    th From
+                    th Your Player(s)
+                    th Their Player(s)
+                    th(colspan='2')
+            tbody
+                tr
+                    td Parth
+                    td Steph Curry, Marcus Smart
+                    td James Harden
+                    td
+                        button.btn.btn-success(type='button') Accept
+                    td
+                        button.btn.btn-danger(type='button') Decline
