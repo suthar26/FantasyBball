@@ -20,20 +20,24 @@ router.get('/matchup', function(req, res, next) {
 });
 
 router.get('/players', function(req, res, next) {
-  axios.get('https://api.mysportsfeeds.com/v2.0/pull/nba/current_season.json?player=lebron-james', {
+  let players = {players:[]};
+  if(req.query.player == null)req.query.player = '';
+  axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
     headers: {Authorization:'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM='}
   })
   .then(response => {
-    console.log(response.data);
+    let data = response.data.playerStatsTotals;
+    data.forEach(function(entry){
+      players.players.push({'name':entry.player.firstName + ' ' + entry.player.lastName, 'ftp':entry.stats.freeThrows.ftPct, 'fgp':entry.stats.fieldGoals.fgPct, 'three':entry.stats.fieldGoals.fg3PtMadePerGame, 'pts':entry.stats.offense.ptsPerGame, 'reb':entry.stats.rebounds.rebPerGame, 'ast':entry.stats.offense.astPerGame, 'st':entry.stats.defense.stlPerGame, 'blk':entry.stats.defense.blkPerGame, 'to':entry.stats.defense.tovPerGame})
+    });
+    res.render('players', {players: players.players.filter(function(player) {
+      return player.name.toLowerCase().includes(req.query.player);
+    })});
+    console.log(players);
   })
   .catch(error => {
     console.log(error);
-  });
-  let players = {players:[{'name':'Lebron james', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'},{'name':'stephen curry', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}]};
-  if(req.query.player == null)req.query.player = '';
-  res.render('players', {players: players.players.filter(function(player) {
-    return player.name.toLowerCase().includes(req.query.player);
-  })});
+  }); 
 });
 
 router.get('/team', function(req, res, next) {
