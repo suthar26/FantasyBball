@@ -39,17 +39,18 @@ block content
                     th Possible Positions
                     th Today Game
             tbody
-                tr
-                    td PF
-                    td Lebron James
-                    td .900
-                    td .600
-                    td 4
-                    td 20
-                    td 7
-                    td 6
-                    td 0
-                    td 1
-                    td 2
-                    td SF/PF
-                    td 6 PM vs UTA
+                each player in players
+                    tr
+                        td placeholder
+                        td=player.name
+                        td=player.ftp
+                        td=player.fgp
+                        td=player.three
+                        td=player.pts
+                        td=player.reb
+                        td=player.ast
+                        td=player.st
+                        td=player.blk
+                        td=player.to
+                        td=player.positions
+                        td=player.game

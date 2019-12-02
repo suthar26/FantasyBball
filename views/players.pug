@@ -30,7 +30,7 @@ block content
     .col-md-12
         h1.bold Available Players
     .col-md-12
-        table.table.table-striped
+        table.table
             thead
                 tr
                     th Name
@@ -45,15 +45,16 @@ block content
                     th TO
                     th Possible Positions
             tbody
-                tr
-                    td Lebron James
-                    td .900
-                    td .600
-                    td 4
-                    td 20
-                    td 7
-                    td 6
-                    td 0
-                    td 1
-                    td 2
-                    td SF/PF
+                each player in players
+                    tr
+                        td=player.name
+                        td=player.ftp
+                        td=player.fgp
+                        td=player.three
+                        td=player.pts
+                        td=player.reb
+                        td=player.ast
+                        td=player.st
+                        td=player.blk
+                        td=player.to
+                        td=player.positions
