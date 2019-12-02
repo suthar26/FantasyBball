@@ -22,11 +22,12 @@ block content
         thead
             tr
             th(scope='col') Rank
-            th(scope='col') Player
+            th(scope='col') User
             th(scope='col') W-L-T
         tbody
             each user in users
                 tr
                     th(scope='row')=user.rank
-                    td=user.name
+                    td 
+                        a(href='/league/' + user.name)=user.name
                     td=user.score
