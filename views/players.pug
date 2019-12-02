@@ -6,7 +6,7 @@ block content
         button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
-            ul.navbar-nav.mr-auto
+            ul.navbar-nav
                 li.nav-item
                     a.nav-link(href='/team') My Team 
                 li.nav-item
@@ -22,10 +22,10 @@ block content
     .col-md-12
         h1.bold Search
     .col-md-12
-        form.navbar-form.navbar-left(role='search')
+        form.navbar-form.navbar-left(method='GET' action='/players?player=leb')
             .form-group
-                input.form-control(type='text' placeholder='Search')
-                button.btn.btn-default(type='submit') Submit
+                input.form-control(type='text' placeholder='Search' name='player')
+                button.btn.btn-primary(type='submit') Submit
 
     .col-md-12
         h1.bold Available Players

@@ -11,11 +11,16 @@ router.get('/league', function(req, res, next) {
 });
 
 router.get('/matchup', function(req, res, next) {
-  res.render('matchup', {you:{'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'},opp:{'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}});
+  res.render('matchup', {you:{'name':'Kunj','score':'4','ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'},opp:{'name':'Parth','score':'4','ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}});
 });
 
 router.get('/players', function(req, res, next) {
-  res.render('players', {players:[{'name':'lebron james', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}]});
+  let players = {players:[{'name':'Lebron james', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'},{'name':'stephen curry', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}]};
+  if(req.query.player == null)req.query.player = '';
+  console.log(req.query);
+  res.render('players', {players: players.players.filter(function(player) {
+    return player.name.toLowerCase().includes(req.query.player);
+  })});
 });
 
 router.get('/team', function(req, res, next) {
