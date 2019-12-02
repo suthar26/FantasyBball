@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const axios = require('axios');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -19,9 +20,17 @@ router.get('/matchup', function(req, res, next) {
 });
 
 router.get('/players', function(req, res, next) {
+  axios.get('https://api.mysportsfeeds.com/v2.0/pull/nba/current_season.json?player=lebron-james', {
+    headers: {Authorization:'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM='}
+  })
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.log(error);
+  });
   let players = {players:[{'name':'Lebron james', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'},{'name':'stephen curry', 'ftp':'.900', 'fgp':'.600', 'three':'5', 'pts':'25', 'reb':'8', 'ast':'5', 'st':'0', 'blk':'1', 'to':'2'}]};
   if(req.query.player == null)req.query.player = '';
-  console.log(req.query);
   res.render('players', {players: players.players.filter(function(player) {
     return player.name.toLowerCase().includes(req.query.player);
   })});
