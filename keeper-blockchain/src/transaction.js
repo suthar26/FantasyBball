@@ -25,47 +25,49 @@ const getTransactionId = (transaction) => {
 exports.getTransactionId  = getTransactionId;
 
 exports.verifyTrade = (tx) => {
-    let TeamA, TeamB;
-    let users = db.getUsers();
-    users.forEach((user) => {
-        if(tx.teamA == user.name){
-            TeamA = user;
-        }
-        if(tx.teamB == user.name){
-            TeamB = user;
-        }
+    return new Promise((resolve, reject)=>{
+        db.getUser(tx.teamA).then((team)=>{
+            console.log(team);
+            db.getUser(tx.teamB).then((team2)=>{
+                console.log(team2);
+                if (team == undefined || team2 == undefined){
+                    reject (new Error ('Team id not valid'));
+                }
+                if (!team.includes(tx.tradingA)){
+                    console.log('invalid trade player A ');
+                    reject (false);
+                }
+                if (!team2.includes(tx.tradingB)){
+                    console.log('invalid trade player B');
+                    reject (false);
+                }
+                console.log("valid block")
+                resolve (true);
+            })
+        });
     });
-    if (TeamA === undefined || TeamB === undefined){
-        return new Error ('Team id not valid');
-    }
-    
-    if (TeamA.players.indexOf(tx.tradingA) == -1){
-        console.log('invalid trade player A ');
-        return false;
-    }
-    if (TeamB.players.indexOf(tx.tradingB) == -1){
-        console.log('invalid trade player B');
-        return false;
-    }
-
-    return true;
 }
 
 exports.updateAssets = (tx) => {
-    let users = db.getUsers();
-    users.forEach((user) => {
-        if(tx.teamA == user.name){
-            user.players[user.players.indexOf(tx.tradingA)] = tx.tradingB;
-            TeamA = user;
-        }
-        if(tx.teamB == user.name){
-            user.players[user.players.indexOf(tx.tradingB)] = tx.tradingA;
-            TeamB = user;
-        }
-    });
+    return new Promise((resolve, reject)=>{
+        db.getUser(tx.teamA).then((team)=>{
+            console.log(team);
+            db.getUser(tx.teamB).then((team2)=>{
+                console.log(team2);
+                if (team == undefined || team2 == undefined){
+                    reject (new Error ('Team id not valid'));
+                }
+                team[team.indexOf(tx.tradingA)] = tx.tradingB;
+                team2[team.indexOf(tx.tradingB)] = tx.tradingA;
 
-    console.log(users);
-    db.updateUsers(users);
+                db.updateUser(tx.teamA , team);
+                db.updateUser(tx.teamB , team2);
+
+                console.log("valid block")
+                resolve (true);
+            })
+        });
+    });
 }
 
 exports.getPublicKey = (aPrivateKey) => {

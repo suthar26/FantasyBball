@@ -192,12 +192,12 @@ router.get('/:user/team', function (req, res, next) {
 });
 
 router.get('/:user/trades', function (req, res, next) {
-  let trades = {};
+  let trades = {trades:[]};
   axios.get('http://localhost:3001/transactionPool').then((response)=>{
-    trades = response.data;
-    console.log(trades);
+    trades.trades = (response.data);
+    console.log(trades.trades);
+    res.render('trades', {user: req.params.user, tradesRes: trades.trades});
   })
-  res.render('trades', {user: req.params.user, trades: trades});
 });
 
 router.post('/:user/requestTrade', function (req, res, next) {

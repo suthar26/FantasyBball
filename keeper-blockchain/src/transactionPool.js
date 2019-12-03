@@ -38,9 +38,3 @@ exports.getTransaction = (id) => {
         } 
     });
 }
-const getTxPoolIns = (aTransactionPool) => {
-    return _(aTransactionPool)
-        .map((tx) => tx.txIns)
-        .flatten()
-        .value();
-};

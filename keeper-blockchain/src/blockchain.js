@@ -63,9 +63,10 @@ exports.generateRawNextBlock = (blockData) => {
     const nextTimestamp = getCurrentTimestamp();
     const newBlock = findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, difficulty);
     if (addBlockToChain(newBlock)) {
-        transaction.updateAssets(blockData);
-        p2p.broadcastLatest();
-        return newBlock;
+        transaction.updateAssets(blockData).then((res)=>{
+            p2p.broadcastLatest();
+            return newBlock;
+        });
     }
     else {
         return null;
@@ -90,13 +91,19 @@ const findBlock = (index, previousHash, timestamp, data, difficulty) => {
 exports.sendTransaction = (teamA, tradingA, teamB, tradingB) => {    
     const tx = transaction.createTransaction(teamA,tradingA,teamB,tradingB);
     tx.id = transaction.getTransactionId(tx);
-    if (transaction.verifyTrade(tx)){
+    transaction.verifyTrade(tx).then((result)=>{
+        console.log("valid transaction")
         transactionPool.addToTransactionPool(tx);
         p2p.broadCastTransactionPool();
         return tx;
-    } else {
+    }).catch((err)=>{
         return new Error ('invalid trade');
-    }
+
+    })
+    // if (transaction.verifyTrade(tx)){
+    // } else {
+    //     return new Error ('invalid trade');
+    // }
 };
 const calculateHashForBlock = (block) => calculateHash(block.index, block.previousHash, block.timestamp, block.data, block.difficulty, block.nonce);
 const calculateHash = (index, previousHash, timestamp, data, difficulty, nonce) => CryptoJS.SHA256(index + previousHash + timestamp + data + difficulty + nonce).toString();

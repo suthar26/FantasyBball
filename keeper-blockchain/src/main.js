@@ -50,6 +50,23 @@ const initHttpServer = (myHttpPort) => {
             res.status(400).send(e.message);
         }
     })
+    app.post('/rejectTransaction',(res,req) => {
+        try{
+            const tx = _(transactionPool_1.getTransactionPool())
+            .map((blocks) => blocks)
+            .flatten()
+            .find({ 'id': req.body.id });
+            if (req.body.id === undefined || tx == null ){
+                throw Error ('invalid transaction id');
+            }
+            const resp = transactionPool_1.updateTransactionPool(tx);
+            res.send(resp);
+        }
+        catch (e){
+            console.log(e.message);
+            res.status(400).send(e.message);
+        }
+    })
     app.post('/sendTransaction', (req, res) => {
         try {
             let teamA = req.body.teamA;

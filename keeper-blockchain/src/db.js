@@ -8,10 +8,18 @@ admin.initializeApp({
   databaseURL: "https://blockchain-keeper.firebaseio.com"
 });
 var db = admin.database();
-let users;
-db.ref("users").on("value", (snapshot) => {
-    users = Array.from(snapshotToArray(snapshot));
+let users = {users: []};
+
+db.ref('/users/').once('value').then(function(snapshot) {
+    var response = (snapshot.val());
+    Object.keys(response).forEach(function (entry){
+      if(entry!='waiver')
+        users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
+    });
 });
+// db.ref("users").on("value", (snapshot) => {
+//     users = Array.from(snapshotToArray(snapshot));
+// });
 
 function snapshotToArray(snapshot) {
     var returnArr = [];
@@ -19,7 +27,6 @@ function snapshotToArray(snapshot) {
     snapshot.forEach(function(childSnapshot) {
         var item = childSnapshot.val();
         item.key = childSnapshot.key;
-
         returnArr.push(item);
     });
 
@@ -31,6 +38,19 @@ exports.getUsers = () => {
     return users;
 }
 
+exports.getUser = (user) => {
+    return new Promise((resolve,reject) => {
+        db.ref("/users/"+user+"/players").on("value", (snapshot)=>{
+            // console.log("snapshot value ")
+            // console.log(snapshot.val());
+            resolve (snapshot.val());
+        });
+    });
+}
+
+exports.updateUser = (user, data) =>{
+    db.ref("/users/"+user+"/players").set(data);
+}
 exports.updateUsers = (users) => {
     db.ref("users").set(users);
 }

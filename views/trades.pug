@@ -30,7 +30,7 @@ block content
                     th Your Player(s)
                     th Their Player(s)
             tbody
-                each trade in trades
+                each trade in tradesRes
                     tr
                         td=trade.teamA
                         td=trade.teamB
@@ -48,7 +48,7 @@ block content
                     th Their Player(s)
                     th(colspan='2')
             tbody
-                each trade in trades
+                each trade in tradesRes
                     tr
                         td=trade.teamA
                         td=trade.tradingA
