@@ -52,6 +52,7 @@ router.get('/:user/league/:otherUser', function (req, res, next) {
         data.forEach(function (entry) {
           players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
+
         res.render('otherTeam', {otherPlayers: snapshot.val().users[req.params.otherUser].players, players: players.players, user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players, players: players.players});
       })
       .catch(error => {
@@ -225,12 +226,21 @@ router.post('/:user/acceptTrade/:id', (req,res,next) => {
 });
 
 router.post('/:user/rejectTrade/:id', (res,req,next) => {
-  axios.post('http://localhost:3001/rejectTransaction', {
-    id: res.params.id
-  })
+  console.log(req.params.id)
+  const requestBody = {
+    id: req.params.id
+  };
+  const url = 'http://localhost:3001/rejectTransaction';
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
+  
+  axios.post(url, qs.stringify(requestBody), config)
   .then(function (response) {
-    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
     console.log(response);
+    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
   })
   .catch(function (error) {
     console.log(error);
