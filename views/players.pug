@@ -69,10 +69,10 @@ block content
                         button.close(type='button' data-dismiss='modal' aria-label='Close')
                             span(aria-hidden='true') &times;
                     .modal-body
-                        select(multiple name='yourPlayers')
+                        select(name='yourPlayers')
                             each player in yourPlayers
                                 option=player
-                        select(multiple name='oppPlayers')
+                        select(name='oppPlayers')
                             each player in players
                                 option=player.name
                             
