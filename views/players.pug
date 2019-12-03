@@ -73,8 +73,8 @@ block content
                             each player in yourPlayers
                                 option=player
                         select(name='oppPlayers')
-                            each player in players
-                                option=player.name
+                            each player in otherPlayers
+                                option=player
                             
                     .modal-footer
                         button.btn.btn-secondary(type='button' data-dismiss='modal') Close
