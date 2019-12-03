@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         a.navbar-brand(href='/') Blockchain Keeper
         button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
@@ -22,7 +22,7 @@ block content
     .col-md-12
         h1.bold(style='text-align:center')  Matchup
     .col-md-12
-        table.table
+        table.table.table-dark
             tr
                 th(style='text-align:left; width:20%')=you.name
                 th(style='text-align:right; width:20%')=you.score
@@ -34,7 +34,7 @@ block content
     .col-md-12
         h1.bold(style='text-align:center') Comparison
     .col-md-12
-        table.table
+        table.table.table-dark
             tbody
                 tr
                     td(style='text-align:left; width:35%')=you.fgp

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         a.navbar-brand(href='/') Blockchain Keeper
         button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
@@ -25,12 +25,12 @@ block content
         form.navbar-form.navbar-left(method='GET' action='/players')
             .form-group
                 input.form-control(type='text' placeholder='Search' name='player')
-                button.btn.btn-primary(type='submit') Submit
+                button.btn.btn-secondary.btn-lg.btn-block(type='submit') Submit
 
     .col-md-12
         h1.bold Available Players
     .col-md-12
-        table.table
+        table.table.table-dark
             thead
                 tr
                     th Name
