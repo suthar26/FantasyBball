@@ -192,7 +192,12 @@ router.get('/:user/team', function (req, res, next) {
 });
 
 router.get('/:user/trades', function (req, res, next) {
-  res.render('trades', {user: req.params.user, sentTrades: [{ 'from': 'Kunj', 'to': 'Parth', 'getPlayers': ['Steph Curry', 'Marcus Smart'], 'sendPlayers': ['James Harden'] }], recievedTrades: [{ 'from': 'Parth', 'to': 'Kunj', 'getPlayers': ['Steph Curry', 'Marcus Smart'], 'sendPlayers': ['James Harden'] }] });
+  let trades = {};
+  axios.get('http://localhost:3001/transactionPool').then((response)=>{
+    trades = response.data;
+    console.log(trades);
+  })
+  res.render('trades', {user: req.params.user, trades: trades});
 });
 
 router.post('/:user/requestTrade', function (req, res, next) {

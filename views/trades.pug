@@ -20,20 +20,22 @@ block content
                     span.sr-only (current)
 
     .col-md-12
-        h1.bold Pending Sent Trade Requests
+        h1.bold Pending Sent Trade Requests #{trades}
     .col-md-12
         table.table.table-dark
             thead
                 tr
+                    th From
                     th To
                     th Your Player(s)
                     th Their Player(s)
             tbody
-                each trade in sentTrades
+                each trade in trades
                     tr
-                        td=trade.to
-                        td=trade.sendPlayers
-                        td=trade.getPlayers
+                        td=trade.teamA
+                        td=trade.teamB
+                        td=trade.tradingA
+                        td=trade.tradingB
 
     .col-md-12
         h1.bold Received Trade Requests
@@ -46,11 +48,11 @@ block content
                     th Their Player(s)
                     th(colspan='2')
             tbody
-                each trade in recievedTrades
+                each trade in trades
                     tr
-                        td=trade.from
-                        td=trade.sendPlayers
-                        td=trade.getPlayers
+                        td=trade.teamA
+                        td=trade.tradingA
+                        td=trade.tradingB
                         td
                             button.btn.btn-outline-success(type='button') Accept
                         td
