@@ -35,11 +35,115 @@ router.get('/:user/league', function (req, res, next) {
 });
 
 router.get('/:user/league/:otherUser', function (req, res, next) {
-  res.render('otherTeam', {user: req.params.user, otherUser: req.params.otherUser, yourPlayers: [{ 'name': 'Lebron James', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }], players: [{ 'name': 'lebron james', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }] });
+  let players = { players: [] };
+  firebase.database().ref('/').once('value').then(function (snapshot) {
+    let otherPlayer = snapshot.val().users[req.params.otherUser].players.join(',');
+ 
+    if (req.query.player == null) req.query.player = '';
+    axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
+      headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
+      params: {player:otherPlayer}
+    })
+      .then(response => {
+        let data = response.data.playerStatsTotals;
+        data.forEach(function (entry) {
+          players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+        });
+        res.render('otherTeam', {user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players, players: players.players});
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
 });
 
 router.get('/:user/matchup', function (req, res, next) {
-  res.render('matchup', {user: req.params.user, you: { 'name': 'Kunj', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' }, opp: { 'name': 'Parth', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' } });
+  let yourPlayers = { players: [] };
+  let otherPlayers = { players: [] };
+  firebase.database().ref('/').once('value').then(function (snapshot) {
+    let otherName = null
+    snapshot.val().matchups.forEach(function(entry){
+      if(entry.player1 == req.params.user){otherName = entry.player2}
+      else if(entry.player2 == req.params.user){otherName =  entry.player1}
+    })
+    
+    let yours = snapshot.val().users[req.params.user].players;
+    let others = snapshot.val().users[otherName].players.join(',');
+    if (req.query.player == null) req.query.player = '';
+  
+    axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
+      headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
+      params: {player:yours.join(',')+','+others}
+    })
+      .then(response => {
+        let data = response.data.playerStatsTotals;
+        data.forEach(function (entry) {
+          if(yours.includes((entry.player.firstName + '-' + entry.player.lastName).toLowerCase())){
+            yourPlayers.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+          }
+          else{
+            otherPlayers.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+          }
+        });
+        let yourStats = {'name': req.params.user,'ftp': 0, 'fgp': 0, 'three': 0, 'pts': 0, 'reb': 0, 'ast': 0, 'st': 0, 'blk': 0, 'to': 0, 'score':0};
+        yourPlayers.players.forEach(function(entry){
+          yourStats.ftp += entry.ftp;
+          yourStats.fgp += entry.fgp;
+          yourStats.three += entry.three;
+          yourStats.pts += entry.pts;
+          yourStats.reb += entry.reb;
+          yourStats.ast += entry.ast;
+          yourStats.st += entry.st;
+          yourStats.blk += entry.blk;
+          yourStats.to += entry.to;
+        });
+        yourStats.three = Math.round(yourStats.three);
+        yourStats.pts = Math.round(yourStats.pts);
+        yourStats.reb = Math.round(yourStats.reb);
+        yourStats.ast = Math.round(yourStats.ast);
+        yourStats.st = Math.round(yourStats.st);
+        yourStats.blk = Math.round(yourStats.blk);
+        yourStats.to = Math.round(yourStats.to);
+        yourStats.ftp = Math.round((yourStats.ftp/yourPlayers.players.length)*10)/10;
+        yourStats.fgp = Math.round((yourStats.fgp/yourPlayers.players.length)*10)/10;
+        let otherStats = {'name': otherName,'ftp': 0, 'fgp': 0, 'three': 0, 'pts': 0, 'reb': 0, 'ast': 0, 'st': 0, 'blk': 0, 'to': 0, 'score':0};
+        otherPlayers.players.forEach(function(entry){
+          otherStats.ftp += entry.ftp;
+          otherStats.fgp += entry.fgp;
+          otherStats.three += entry.three;
+          otherStats.pts += entry.pts;
+          otherStats.reb += entry.reb;
+          otherStats.ast += entry.ast;
+          otherStats.st += entry.st;
+          otherStats.blk += entry.blk;
+          otherStats.to += entry.to;
+        });
+        otherStats.three = Math.round(otherStats.three);
+        otherStats.pts = Math.round(otherStats.pts);
+        otherStats.reb = Math.round(otherStats.reb);
+        otherStats.ast = Math.round(otherStats.ast);
+        otherStats.st = Math.round(otherStats.st);
+        otherStats.blk = Math.round(otherStats.blk);
+        otherStats.to = Math.round(otherStats.to);
+        otherStats.ftp = Math.round((yourStats.ftp/otherPlayers.players.length)*10)/10;
+        otherStats.fgp = Math.round((yourStats.fgp/otherPlayers.players.length)*10)/10;
+        if(yourStats.ftp > otherStats.ftp) yourStats.score++; else if(yourStats.ftp < otherStats.ftp) otherStats.score++;
+        if(yourStats.fgp > otherStats.fgp) yourStats.score++; else if(yourStats.fgp < otherStats.fgp) otherStats.score++;
+        if(yourStats.three > otherStats.three) yourStats.score++; else if(yourStats.three < otherStats.three) otherStats.score++;
+        if(yourStats.pts > otherStats.pts) yourStats.score++; else if(yourStats.pts < otherStats.pts) otherStats.score++;
+        if(yourStats.reb > otherStats.reb) yourStats.score++; else if(yourStats.reb < otherStats.reb) otherStats.score++;
+        if(yourStats.ast > otherStats.ast) yourStats.score++; else if(yourStats.ast < otherStats.ast) otherStats.score++;
+        if(yourStats.st > otherStats.st) yourStats.score++; else if(yourStats.st < otherStats.st) otherStats.score++;
+        if(yourStats.blk > otherStats.blk) yourStats.score++; else if(yourStats.blk < otherStats.blk) otherStats.score++;
+        if(yourStats.to < otherStats.to) yourStats.score++; else if(yourStats.to > otherStats.to) otherStats.score++;
+
+        res.render('matchup', {user: req.params.user, otherUser: otherName, you: yourStats, opp: otherStats});
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
+  //res.render('matchup', {user: req.params.user, you: { 'name': 'Kunj', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' }, opp: { 'name': 'Parth', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' } });
 });
 
 router.get('/:user/players', function (req, res, next) {

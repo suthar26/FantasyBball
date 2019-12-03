@@ -20,7 +20,7 @@ block content
                     a.nav-link(href='/' + user + '/trades') Trade Requests
 
     .col-md-12
-    h1.bold(style='text-align:center')=user
+    h1.bold(style='text-align:center')=otherUser + '\'s team'
     button.btn.btn-primary(type='button' data-toggle='modal' data-target='#tradeModal') Trade
     .col-md-12
         table.table
@@ -36,7 +36,6 @@ block content
                     th ST
                     th BLK
                     th TO
-                    th Today Game
             tbody
                 each player in players
                     tr
@@ -50,7 +49,6 @@ block content
                         td=player.st
                         td=player.blk
                         td=player.to
-                        td=player.game
     
     #tradeModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
         .modal-dialog(role='document')
