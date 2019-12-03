@@ -2,22 +2,22 @@ extends layout
 
 block content
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        a.navbar-brand(href='/') Blockchain Keeper
+        a.navbar-brand(href='/' + user + '/') Blockchain Keeper
         button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item.active
-                    a.nav-link(href='/team') My Team 
+                    a.nav-link(href='/' + user + '/team') My Team 
                     span.sr-only (current)
                 li.nav-item
-                    a.nav-link(href='/matchup') Matchup
+                    a.nav-link(href='/' + user + '/matchup') Matchup
                 li.nav-item
-                    a.nav-link(href='/players') Players
+                    a.nav-link(href='/' + user + '/players') Players
                 li.nav-item
-                    a.nav-link(href='/league') League
+                    a.nav-link(href='/' + user + '/league') League
                 li.nav-item
-                    a.nav-link(href='/trades') Trade Requests
+                    a.nav-link(href='/' + user + '/trades') Trade Requests
 
     .col-md-12
     h1.bold(style='text-align:center')=user
@@ -55,7 +55,7 @@ block content
     #tradeModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
-                form(action='/requestTrade' method='post')
+                form(action='/:user/requestTrade' method='post')
                     .modal-header
                         h5#exampleModalLabel.modal-title Trade
                         button.close(type='button' data-dismiss='modal' aria-label='Close')

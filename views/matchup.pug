@@ -2,22 +2,22 @@ extends layout
 
 block content
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        a.navbar-brand(href='/') Blockchain Keeper
+        a.navbar-brand(href='/' + user + '/') Blockchain Keeper
         button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href='/team') My Team 
+                    a.nav-link(href='/' + user + '/team') My Team 
                 li.nav-item.active
-                    a.nav-link(href='/matchup') Matchup
+                    a.nav-link(href='/' + user + '/matchup') Matchup
                     span.sr-only (current)
                 li.nav-item
-                    a.nav-link(href='/players') Players
+                    a.nav-link(href='/' + user + '/players') Players
                 li.nav-item
-                    a.nav-link(href='/league') League
+                    a.nav-link(href='/' + user + '/league') League
                 li.nav-item
-                    a.nav-link(href='/trades') Trade Requests
+                    a.nav-link(href='/' + user + '/trades') Trade Requests
 
     .col-md-12
         h1.bold(style='text-align:center')  Matchup
