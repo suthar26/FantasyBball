@@ -250,7 +250,29 @@ router.post('/:user/rejectTrade/:id', (res,req,next) => {
   
 
 router.post('/:user/requestTrade', function (req, res, next) {
-  res.redirect('/trades');
+  console.log(req.body);
+
+  const requestBody = {
+    teamA: req.body.team,
+    teamB: req.body.team2,
+    tradingA: req.body.yourPlayers,
+    tradingB: req.body.oppPlayers
+  };
+  const url = 'http://localhost:3001/sendTransaction';
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
+  
+  axios.post(url, qs.stringify(requestBody), config)
+  .then(function (response) {
+    console.log(response);
+    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 });
 
 module.exports = router;
