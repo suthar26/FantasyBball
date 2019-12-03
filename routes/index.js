@@ -25,7 +25,8 @@ router.get('/:user/league', function (req, res, next) {
     let users = {users: []};
     var response = (snapshot.val());
     Object.keys(response).forEach(function (entry){
-      users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
+      if(entry!='waiver')
+        users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
     });
     users.users.sort(function(a, b) {
       return b.win - a.win  ||  b.tie - a.tie;
@@ -143,13 +144,12 @@ router.get('/:user/matchup', function (req, res, next) {
         console.log(error);
       });
   });
-  //res.render('matchup', {user: req.params.user, you: { 'name': 'Kunj', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' }, opp: { 'name': 'Parth', 'score': '4', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2' } });
 });
 
 router.get('/:user/players', function (req, res, next) {
   let players = { players: [] };
   firebase.database().ref('/').once('value').then(function (snapshot) {
-    let waivers = snapshot.val().waiver.players.join(',');
+    let waivers = snapshot.val().users.waiver.players.join(',');
  
     if (req.query.player == null) req.query.player = '';
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
