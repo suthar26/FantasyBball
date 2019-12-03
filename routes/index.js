@@ -225,12 +225,21 @@ router.post('/:user/acceptTrade/:id', (req,res,next) => {
 });
 
 router.post('/:user/rejectTrade/:id', (res,req,next) => {
-  axios.post('http://localhost:3001/rejectTransaction', {
-    id: res.params.id
-  })
+  console.log(req.params.id)
+  const requestBody = {
+    id: req.params.id
+  };
+  const url = 'http://localhost:3001/rejectTransaction';
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
+  
+  axios.post(url, qs.stringify(requestBody), config)
   .then(function (response) {
-    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
     console.log(response);
+    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
   })
   .catch(function (error) {
     console.log(error);
