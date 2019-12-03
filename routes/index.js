@@ -25,7 +25,6 @@ router.get('/:user/league', function (req, res, next) {
     let users = {users: []};
     var response = (snapshot.val());
     Object.keys(response).forEach(function (entry){
-      console.log(response[entry]);
       users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
     });
     users.users.sort(function(a, b) {
@@ -36,7 +35,7 @@ router.get('/:user/league', function (req, res, next) {
 });
 
 router.get('/:user/league/:otherUser', function (req, res, next) {
-  res.render('otherTeam', {user: req.params.user, yourPlayers: [{ 'name': 'Lebron James', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }], players: [{ 'name': 'lebron james', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }] });
+  res.render('otherTeam', {user: req.params.user, otherUser: req.params.otherUser, yourPlayers: [{ 'name': 'Lebron James', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }], players: [{ 'name': 'lebron james', 'ftp': '.900', 'fgp': '.600', 'three': '5', 'pts': '25', 'reb': '8', 'ast': '5', 'st': '0', 'blk': '1', 'to': '2', 'game': '8:00 PM @ UTA' }] });
 });
 
 router.get('/:user/matchup', function (req, res, next) {
@@ -45,8 +44,8 @@ router.get('/:user/matchup', function (req, res, next) {
 
 router.get('/:user/players', function (req, res, next) {
   let players = { players: [] };
-  firebase.database().ref('/waiver/players').once('value').then(function (snapshot) {
-    let waivers = snapshot.val().join(',');
+  firebase.database().ref('/').once('value').then(function (snapshot) {
+    let waivers = snapshot.val().waiver.players.join(',');
  
     if (req.query.player == null) req.query.player = '';
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
@@ -58,7 +57,7 @@ router.get('/:user/players', function (req, res, next) {
         data.forEach(function (entry) {
           players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
-        res.render('players', {user: req.params.user,
+        res.render('players', {user: req.params.user, yourPlayers: snapshot.val().users[req.params.user].players,
           players: players.players.filter(function (player) {
             return player.name.toLowerCase().includes(req.query.player);
           })

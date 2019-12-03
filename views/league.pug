@@ -25,9 +25,9 @@ block content
             th(scope='col') User
             th(scope='col') W-L-T
         tbody
-            each user,index in users
+            each userName,index in users
                 tr
                     th(scope='row')=index+1
                     td 
-                        a(href='/' + user + '/league/' + user.name)=user.name
-                    td=user.win+'-'+user.loss+'-'+user.tie
+                        a(href='/' + user + '/league/' + userName.name)=userName.name
+                    td=userName.win+'-'+userName.loss+'-'+userName.tie
