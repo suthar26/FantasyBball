@@ -126,8 +126,8 @@ router.get('/:user/matchup', function (req, res, next) {
         otherStats.st = Math.round(otherStats.st);
         otherStats.blk = Math.round(otherStats.blk);
         otherStats.to = Math.round(otherStats.to);
-        otherStats.ftp = Math.round((yourStats.ftp/otherPlayers.players.length)*10)/10;
-        otherStats.fgp = Math.round((yourStats.fgp/otherPlayers.players.length)*10)/10;
+        otherStats.ftp = Math.round((otherStats.ftp/otherPlayers.players.length)*10)/10;
+        otherStats.fgp = Math.round((otherStats.fgp/otherPlayers.players.length)*10)/10;
         if(yourStats.ftp > otherStats.ftp) yourStats.score++; else if(yourStats.ftp < otherStats.ftp) otherStats.score++;
         if(yourStats.fgp > otherStats.fgp) yourStats.score++; else if(yourStats.fgp < otherStats.fgp) otherStats.score++;
         if(yourStats.three > otherStats.three) yourStats.score++; else if(yourStats.three < otherStats.three) otherStats.score++;
