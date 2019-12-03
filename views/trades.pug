@@ -20,7 +20,7 @@ block content
                     span.sr-only (current)
 
     .col-md-12
-        h1.bold Pending Sent Trade Requests
+        h1.bold Pending Sent Trade Requests 
     .col-md-12
         table.table.table-dark
             thead
@@ -54,6 +54,10 @@ block content
                         td=trade.tradingA
                         td=trade.tradingB
                         td
-                            button.btn.btn-outline-success(type='button') Accept
+                            form.navbar-form.navbar-left(method='POST' action='/' + user + '/acceptTrade/' + trade.id)
+                                .form-group
+                                    button.btn.btn-outline-success(type='submit') Accept
                         td
-                            button.btn.btn-outline-danger(type='button') Decline
+                            form.navbar-form.navbar-left(method='POST' action='/' + user + '/rejectTrade/' + trade.id)
+                                .form-group
+                                    button.btn.btn-outline-danger(type='submit') Reject

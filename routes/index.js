@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const axios = require('axios');
 var firebase = require("firebase/app");
+const qs = require('querystring')
+
 require('firebase/auth');
 require("firebase/database");
 
@@ -199,6 +201,43 @@ router.get('/:user/trades', function (req, res, next) {
     res.render('trades', {user: req.params.user, tradesRes: trades.trades});
   })
 });
+
+router.post('/:user/acceptTrade/:id', (req,res,next) => {
+  console.log(req.params.id)
+  const requestBody = {
+    id: req.params.id
+  };
+  const url = 'http://localhost:3001/approveTransaction';
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
+  
+  axios.post(url, qs.stringify(requestBody), config)
+  .then(function (response) {
+    console.log(response);
+    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+});
+
+router.post('/:user/rejectTrade/:id', (res,req,next) => {
+  axios.post('http://localhost:3001/rejectTransaction', {
+    id: res.params.id
+  })
+  .then(function (response) {
+    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+});
+  
+  
 
 router.post('/:user/requestTrade', function (req, res, next) {
   res.redirect('/trades');
