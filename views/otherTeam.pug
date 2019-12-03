@@ -54,6 +54,8 @@ block content
         .modal-dialog(role='document')
             .modal-content
                 form(action='/:user/requestTrade' method='post')
+                    input(type='hidden' name='team' value=''+user+'')    
+                    input(type='hidden' name='team2' value=''+otherUser+'')    
                     .modal-header
                         h5#exampleModalLabel.modal-title Trade
                         button.close(type='button' data-dismiss='modal' aria-label='Close')
