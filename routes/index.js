@@ -52,7 +52,8 @@ router.get('/:user/league/:otherUser', function (req, res, next) {
         data.forEach(function (entry) {
           players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
-        res.render('otherTeam', {user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players, players: players.players});
+        console.log(snapshot.val().users[req.params.user].players)
+        res.render('otherTeam', {otherPlayers: snapshot.val().users[req.params.otherUser].players, players: players.players, user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players, players: players.players});
       })
       .catch(error => {
         console.log(error);
@@ -163,7 +164,7 @@ router.get('/:user/players', function (req, res, next) {
         data.forEach(function (entry) {
           players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
-        res.render('players', {user: req.params.user, yourPlayers: snapshot.val().users[req.params.user].players,
+        res.render('players', {otherPlayers: snapshot.val().users.waiver.players, user: req.params.user, yourPlayers: snapshot.val().users[req.params.user].players,
           players: players.players.filter(function (player) {
             return player.name.toLowerCase().includes(req.query.player);
           })

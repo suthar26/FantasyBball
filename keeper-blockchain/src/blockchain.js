@@ -107,7 +107,7 @@ exports.sendTransaction = (teamA, tradingA, teamB, tradingB) => {
 };
 const calculateHashForBlock = (block) => calculateHash(block.index, block.previousHash, block.timestamp, block.data, block.difficulty, block.nonce);
 const calculateHash = (index, previousHash, timestamp, data, difficulty, nonce) => CryptoJS.SHA256(index + previousHash + timestamp + data + difficulty + nonce).toString();
-isValidBlockStructure = (block) => {
+const isValidBlockStructure = (block) => {
 
     console.log(typeof block.index);
     console.log(typeof block.hash);
@@ -209,7 +209,7 @@ addBlockToChain = (newBlock) => {
     }
     return false;
 };
-exports.addBlockToChain = this.addBlockToChain;
+exports.addBlockToChain = addBlockToChain;
 exports.replaceChain = (newBlocks) => {
     const aUnspentTxOuts = isValidChain(newBlocks);
     const validChain = aUnspentTxOuts !== null;
@@ -237,5 +237,9 @@ const genesisTransaction = {
 const genesisBlock = new Block(0, 'c009d8d136ec5132f5cf3c096c1cdf5798414914868607b266830a9c8b0c5e7a', '', getCurrentTimestamp, [genesisTransaction], 0, 0);
 
 let blockchain = [genesisBlock];
-// the unspent txOut of genesis block is set to unspentTxOuts on startup
 
+const handleReceivedTransaction = (transaction) => {
+    transactionPool.addToTransactionPool(transaction);
+}
+
+exports.handleReceivedTransaction = handleReceivedTransaction;
