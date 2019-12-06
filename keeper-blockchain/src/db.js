@@ -17,9 +17,7 @@ db.ref('/users/').once('value').then(function(snapshot) {
         users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
     });
 });
-// db.ref("users").on("value", (snapshot) => {
-//     users = Array.from(snapshotToArray(snapshot));
-// });
+
 
 function snapshotToArray(snapshot) {
     var returnArr = [];
@@ -38,19 +36,21 @@ exports.getUsers = () => {
     return users;
 }
 
+/** get user from specified name */
 exports.getUser = (user) => {
     return new Promise((resolve,reject) => {
         db.ref("/users/"+user+"/players").on("value", (snapshot)=>{
-            // console.log("snapshot value ")
-            // console.log(snapshot.val());
             resolve (snapshot.val());
         });
     });
 }
 
+/** update specified user players usign specified data */
 exports.updateUser = (user, data) =>{
     db.ref("/users/"+user+"/players").set(data);
 }
+
+/** update users  */
 exports.updateUsers = (users) => {
     db.ref("users").set(users);
 }

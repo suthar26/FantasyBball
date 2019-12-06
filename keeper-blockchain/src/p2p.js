@@ -1,8 +1,10 @@
 const WebSocket = require("ws");
 const blockchain_1 = require("./blockchain");
 const transactionPool_1 = require("./transactionPool");
+const _ = require("lodash");
 const sockets = [];
 var MessageType;
+// Message types and assignment
 (function (MessageType) {
     MessageType[MessageType["QUERY_LATEST"] = 0] = "QUERY_LATEST";
     MessageType[MessageType["QUERY_ALL"] = 1] = "QUERY_ALL";
@@ -12,6 +14,7 @@ var MessageType;
 })(MessageType || (MessageType = {}));
 class Message {
 }
+/** initialize the p2p server  */
 const initP2PServer = (p2pPort) => {
     const server = new WebSocket.Server({ port: p2pPort });
     server.on('connection', (ws) => {
@@ -22,6 +25,8 @@ const initP2PServer = (p2pPort) => {
 exports.initP2PServer = initP2PServer;
 const getSockets = () => sockets;
 exports.getSockets = getSockets;
+
+/** inital connection query */
 const initConnection = (ws) => {
     sockets.push(ws);
     initMessageHandler(ws);
@@ -32,6 +37,8 @@ const initConnection = (ws) => {
         broadcast(queryTransactionPoolMsg());
     }, 500);
 };
+
+/** function to parse the JSON object */
 const JSONToObject = (data) => {
     try {
         return JSON.parse(data);
@@ -41,15 +48,20 @@ const JSONToObject = (data) => {
         return null;
     }
 };
+
+/** function to manage the inital message  */
 const initMessageHandler = (ws) => {
     ws.on('message', (data) => {
         try {
+            // verify message data format
             const message = JSONToObject(data);
             if (message === null) {
-                console.log('could not parse received JSON message: ' + data);
+                console.log('received message is in improper format: ' + data);
                 return;
             }
             console.log('Received message: %s', JSON.stringify(message));
+
+            // according to the message type route to proper function
             switch (message.type) {
                 case MessageType.QUERY_LATEST:
                     write(ws, responseLatestMsg());
@@ -74,12 +86,21 @@ const initMessageHandler = (ws) => {
                         console.log('invalid transaction received: %s', JSON.stringify(message.data));
                         break;
                     }
+
                     receivedTransactions.forEach((transaction) => {
                         try {
-                            blockchain_1.handleReceivedTransaction(transaction);
-                            // if no error is thrown, transaction was indeed added to the pool
-                            // let's broadcast transaction pool
-                            broadCastTransactionPool();
+                            const tx = _(transactionPool_1.getTransactionPool())
+                            .map((blocks) => blocks)
+                            .flatten()
+                            .find({ 'id': transaction.id });
+
+                            if(tx == null){
+                                blockchain_1.handleReceivedTransaction(transaction);
+                                // if no error is thrown, transaction is added to the pool
+    
+                                // broadcast transaction pool to peers
+                                broadCastTransactionPool();    
+                            }
                         }
                         catch (e) {
                             console.log(e.message);

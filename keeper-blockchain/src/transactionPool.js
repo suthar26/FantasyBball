@@ -2,10 +2,12 @@ const _ = require("lodash");
 const blockchain = require("./blockchain");
 let transactionPool = [];
 
+/* get Transaction pool */
 exports.getTransactionPool = () => {
     return _.cloneDeep(transactionPool);
 };
 
+/** verify trade */
 exports.verifyTrade = (trade) => {
     if (getPlayer(trade.teamA).contains(tradingA) && getPlayer(trade.teamB).contains(tradingB) ){
         return true;
@@ -13,6 +15,7 @@ exports.verifyTrade = (trade) => {
     return false;
 }
 
+/** add transaction to pool */
 exports.addToTransactionPool = (tx) => {
     console.log('adding to txPool: %s', JSON.stringify(tx));
     transactionPool.push(tx);

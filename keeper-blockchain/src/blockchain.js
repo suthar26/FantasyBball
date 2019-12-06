@@ -5,6 +5,7 @@ const transaction = require("./transaction");
 const transactionPool = require("./transactionPool");
 const util = require("./util");
 
+/** Block class */
 class Block {
     constructor(index, hash, previousHash, timestamp, data, difficulty, nonce) {
         this.index = index;
@@ -18,18 +19,19 @@ class Block {
 };
 exports.Block = Block;
 
+/** get the blockchain */
 const getBlockchain = () => blockchain;
 exports.getBlockchain = getBlockchain;
 
+/** get latest block in the chain */
 const getLatestBlock = () => blockchain[blockchain.length - 1];
 
 exports.getLatestBlock = getLatestBlock;
-// in seconds
-const BLOCK_GENERATION_INTERVAL = 10;
-// in blocks
+
+// Difficulty adjustment internal in blocks
 const DIFFICULTY_ADJUSTMENT_INTERVAL = 10;
 
-
+/** get block difficulty */
 const getDifficulty = (aBlockchain) => {
     const latestBlock = aBlockchain[blockchain.length - 1];
     if (latestBlock.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0 && latestBlock.index !== 0) {
@@ -40,6 +42,7 @@ const getDifficulty = (aBlockchain) => {
     }
 };
 
+/** get adjusted block diffulty for provided block and chain */
 const getAdjustedDifficulty = (latestBlock, aBlockchain) => {
     const prevAdjustmentBlock = aBlockchain[blockchain.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
     const timeExpected = BLOCK_GENERATION_INTERVAL * DIFFICULTY_ADJUSTMENT_INTERVAL;
@@ -54,8 +57,11 @@ const getAdjustedDifficulty = (latestBlock, aBlockchain) => {
         return prevAdjustmentBlock.difficulty;
     }
 };
+
+/** get current timestamp */
 const getCurrentTimestamp = () => Math.round(new Date().getTime() / 1000);
 
+/** generate block using the data provided */
 exports.generateRawNextBlock = (blockData) => {
     const previousBlock = getLatestBlock();
     const difficulty = getDifficulty(getBlockchain());
@@ -73,10 +79,12 @@ exports.generateRawNextBlock = (blockData) => {
     }
 };
 
+/** generate block with transaction provided */
 exports.generateNextBlockWithTransaction = (tx) => {
     return this.generateRawNextBlock(tx);
 }
 
+/** create a block with specified values */
 const findBlock = (index, previousHash, timestamp, data, difficulty) => {
     let nonce = 0;
     while (true) {
@@ -88,6 +96,7 @@ const findBlock = (index, previousHash, timestamp, data, difficulty) => {
     }
 };
 
+/** send transaction */
 exports.sendTransaction = (teamA, tradingA, teamB, tradingB) => {
     const tx = transaction.createTransaction(teamA, tradingA, teamB, tradingB);
     tx.id = transaction.getTransactionId(tx);
@@ -100,26 +109,24 @@ exports.sendTransaction = (teamA, tradingA, teamB, tradingB) => {
         return new Error('invalid trade');
 
     })
-    // if (transaction.verifyTrade(tx)){
-    // } else {
-    //     return new Error ('invalid trade');
-    // }
 };
-const calculateHashForBlock = (block) => calculateHash(block.index, block.previousHash, block.timestamp, block.data, block.difficulty, block.nonce);
-const calculateHash = (index, previousHash, timestamp, data, difficulty, nonce) => CryptoJS.SHA256(index + previousHash + timestamp + data + difficulty + nonce).toString();
-const isValidBlockStructure = (block) => {
 
-    console.log(typeof block.index);
-    console.log(typeof block.hash);
-    console.log(typeof block.previousHash);
-    console.log(typeof block.timestamp);
-    console.log(typeof block.data);
+/** calculate hash for a given block */
+const calculateHashForBlock = (block) => calculateHash(block.index, block.previousHash, block.timestamp, block.data, block.difficulty, block.nonce);
+
+/** find sha-256 for a given details */
+const calculateHash = (index, previousHash, timestamp, data, difficulty, nonce) => CryptoJS.SHA256(index + previousHash + timestamp + data + difficulty + nonce).toString();
+
+/** check block structure */
+const isValidBlockStructure = (block) => {
 
     return typeof block.index === 'number'
         && typeof block.hash === 'string'
         && typeof block.previousHash === 'string'
         && typeof block.data === 'object';
 };
+
+/** check validity of new blocks */
 const isValidNewBlock = (newBlock, previousBlock) => {
     if (!isValidBlockStructure(newBlock)) {
         console.log('invalid block structure: %s', JSON.stringify(newBlock));
@@ -172,7 +179,7 @@ const hashMatchesDifficulty = (hash, difficulty) => {
     return hashInBinary.startsWith(requiredPrefix);
 };
 /*
-Checks if the given blockchain is valid. Return the unspent txOuts if the chain is valid
+Checks if the given blockchain is valid
  */
 const isValidChain = (blockchainToValidate) => {
     console.log('isValidChain:');
@@ -183,9 +190,10 @@ const isValidChain = (blockchainToValidate) => {
     if (!isValidGenesis(blockchainToValidate[0])) {
         return null;
     }
+
     /*
-    Validate each block in the chain. The block is valid if the block structure is valid
-    and the transaction are valid
+    Validate each block in the chain. 
+    The block is valid if the block structure is valid and the transaction are valid
     */
     let aUnspentTxOuts = [];
     for (let i = 0; i < blockchainToValidate.length; i++) {
@@ -193,14 +201,11 @@ const isValidChain = (blockchainToValidate) => {
         if (i !== 0 && !isValidNewBlock(blockchainToValidate[i], blockchainToValidate[i - 1])) {
             return null;
         }
-        aUnspentTxOuts = transaction.processTransactions(currentBlock.data, aUnspentTxOuts, currentBlock.index);
-        if (aUnspentTxOuts === null) {
-            console.log('invalid transactions in blockchain');
-            return null;
-        }
     }
     return aUnspentTxOuts;
 };
+
+/** add block to chain */
 addBlockToChain = (newBlock) => {
     if (isValidNewBlock(newBlock, getLatestBlock())) {
         blockchain.push(newBlock);
@@ -211,14 +216,13 @@ addBlockToChain = (newBlock) => {
 };
 exports.addBlockToChain = addBlockToChain;
 exports.replaceChain = (newBlocks) => {
-    const aUnspentTxOuts = isValidChain(newBlocks);
-    const validChain = aUnspentTxOuts !== null;
+    const validCheck = isValidChain(newBlocks);
+    const validChain = validCheck !== null;
+
     if (validChain &&
         getAccumulatedDifficulty(newBlocks) > getAccumulatedDifficulty(getBlockchain())) {
         console.log('Received blockchain is valid. Replacing current blockchain with received blockchain');
         blockchain = newBlocks;
-        setUnspentTxOuts(aUnspentTxOuts);
-        transactionPool.updateTransactionPool(unspentTxOuts);
         p2p.broadcastLatest();
     }
     else {
@@ -226,6 +230,7 @@ exports.replaceChain = (newBlocks) => {
     }
 };
 
+/** genesis transaction details */
 const genesisTransaction = {
     'teamA': 'waiver',
     'teamB': 'waiver',

@@ -153,13 +153,13 @@ router.get('/:user/players', function (req, res, next) {
   let players = { players: [] };
   firebase.database().ref('/').once('value').then(function (snapshot) {
     let waivers = snapshot.val().users.waiver.players.join(',');
+    console.log(snapshot.val().users);
  
     if (req.query.player == null) req.query.player = '';
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
       headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
       params: {player:waivers}
-    })
-      .then(response => {
+    }).then(response => {
         let data = response.data.playerStatsTotals;
         data.forEach(function (entry) {
           players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
@@ -250,8 +250,7 @@ router.post('/:user/rejectTrade/:id', (res,req,next) => {
   
 
 router.post('/:user/requestTrade', function (req, res, next) {
-  console.log(req.body);
-
+  
   const requestBody = {
     teamA: req.body.team,
     teamB: req.body.team2,
@@ -268,7 +267,7 @@ router.post('/:user/requestTrade', function (req, res, next) {
   axios.post(url, qs.stringify(requestBody), config)
   .then(function (response) {
     console.log(response);
-    res.redirect('http://localhost:3000/'+req.params.user+'/trades')
+    res.redirect('http://localhost:3000/'+req.body.team+'/trades')
   })
   .catch(function (error) {
     console.log(error);
