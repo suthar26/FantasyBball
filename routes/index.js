@@ -22,27 +22,38 @@ router.get('/:user/', function (req, res, next) {
   res.render('index', {user: req.params.user});
 });
 
+/*GET league page*/
 router.get('/:user/league', function (req, res, next) {
+
+  //Get users from firebase asynchronously, then execute function
   firebase.database().ref('/users/').once('value').then(function(snapshot) {
-    let users = {users: []};
+    let users = [];
     var response = (snapshot.val());
     Object.keys(response).forEach(function (entry){
       if(entry!='waiver')
-        users.users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
+        users.push({'name':entry, 'win': response[entry].win, 'loss': response[entry].loss, 'tie': response[entry].tie});
     });
-    users.users.sort(function(a, b) {
+
+    //Sort users on wins, then ties
+    users.sort(function(a, b) {
       return b.win - a.win  ||  b.tie - a.tie;
     });
-    res.render('league', {user: req.params.user, users: users.users});
+
+    res.render('league', {user: req.params.user, users: users});
   });
 });
 
+/*GET team page of another user*/
 router.get('/:user/league/:otherUser', function (req, res, next) {
-  let players = { players: [] };
+  let players = [];
+
+  //Get value from firebase asynchronously, then execute function
   firebase.database().ref('/').once('value').then(function (snapshot) {
     let otherPlayer = snapshot.val().users[req.params.otherUser].players.join(',');
  
     if (req.query.player == null) req.query.player = '';
+
+    //Get player stats from MySportsFeed API asynchronously, then execute function
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
       headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
       params: {player:otherPlayer}
@@ -50,10 +61,10 @@ router.get('/:user/league/:otherUser', function (req, res, next) {
       .then(response => {
         let data = response.data.playerStatsTotals;
         data.forEach(function (entry) {
-          players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+          players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
 
-        res.render('otherTeam', {otherPlayers: snapshot.val().users[req.params.otherUser].players, players: players.players, user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players, players: players.players});
+        res.render('otherTeam', {otherPlayers: snapshot.val().users[req.params.otherUser].players, players: players, user: req.params.user, otherUser: req.params.otherUser, yourPlayers: snapshot.val().users[req.params.user].players});
       })
       .catch(error => {
         console.log(error);
@@ -61,9 +72,12 @@ router.get('/:user/league/:otherUser', function (req, res, next) {
   });
 });
 
+/*GET matchup page*/
 router.get('/:user/matchup', function (req, res, next) {
-  let yourPlayers = { players: [] };
-  let otherPlayers = { players: [] };
+  let yourPlayers = [];
+  let otherPlayers = [];
+
+  //Get value from firebase asynchronously, then execute function
   firebase.database().ref('/').once('value').then(function (snapshot) {
     let otherName = null
     snapshot.val().matchups.forEach(function(entry){
@@ -75,6 +89,7 @@ router.get('/:user/matchup', function (req, res, next) {
     let others = snapshot.val().users[otherName].players.join(',');
     if (req.query.player == null) req.query.player = '';
   
+    //Get player stats from MySportsFeed API asynchronously, then execute function
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
       headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
       params: {player:yours.join(',')+','+others}
@@ -83,54 +98,15 @@ router.get('/:user/matchup', function (req, res, next) {
         let data = response.data.playerStatsTotals;
         data.forEach(function (entry) {
           if(yours.includes((entry.player.firstName + '-' + entry.player.lastName).toLowerCase())){
-            yourPlayers.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+            yourPlayers.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
           }
           else{
-            otherPlayers.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+            otherPlayers.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
           }
         });
-        let yourStats = {'name': req.params.user,'ftp': 0, 'fgp': 0, 'three': 0, 'pts': 0, 'reb': 0, 'ast': 0, 'st': 0, 'blk': 0, 'to': 0, 'score':0};
-        yourPlayers.players.forEach(function(entry){
-          yourStats.ftp += entry.ftp;
-          yourStats.fgp += entry.fgp;
-          yourStats.three += entry.three;
-          yourStats.pts += entry.pts;
-          yourStats.reb += entry.reb;
-          yourStats.ast += entry.ast;
-          yourStats.st += entry.st;
-          yourStats.blk += entry.blk;
-          yourStats.to += entry.to;
-        });
-        yourStats.three = Math.round(yourStats.three);
-        yourStats.pts = Math.round(yourStats.pts);
-        yourStats.reb = Math.round(yourStats.reb);
-        yourStats.ast = Math.round(yourStats.ast);
-        yourStats.st = Math.round(yourStats.st);
-        yourStats.blk = Math.round(yourStats.blk);
-        yourStats.to = Math.round(yourStats.to);
-        yourStats.ftp = Math.round((yourStats.ftp/yourPlayers.players.length)*10)/10;
-        yourStats.fgp = Math.round((yourStats.fgp/yourPlayers.players.length)*10)/10;
-        let otherStats = {'name': otherName,'ftp': 0, 'fgp': 0, 'three': 0, 'pts': 0, 'reb': 0, 'ast': 0, 'st': 0, 'blk': 0, 'to': 0, 'score':0};
-        otherPlayers.players.forEach(function(entry){
-          otherStats.ftp += entry.ftp;
-          otherStats.fgp += entry.fgp;
-          otherStats.three += entry.three;
-          otherStats.pts += entry.pts;
-          otherStats.reb += entry.reb;
-          otherStats.ast += entry.ast;
-          otherStats.st += entry.st;
-          otherStats.blk += entry.blk;
-          otherStats.to += entry.to;
-        });
-        otherStats.three = Math.round(otherStats.three);
-        otherStats.pts = Math.round(otherStats.pts);
-        otherStats.reb = Math.round(otherStats.reb);
-        otherStats.ast = Math.round(otherStats.ast);
-        otherStats.st = Math.round(otherStats.st);
-        otherStats.blk = Math.round(otherStats.blk);
-        otherStats.to = Math.round(otherStats.to);
-        otherStats.ftp = Math.round((otherStats.ftp/otherPlayers.players.length)*10)/10;
-        otherStats.fgp = Math.round((otherStats.fgp/otherPlayers.players.length)*10)/10;
+        let yourStats = statGenerator(yourPlayers, req.params.user)
+        let otherStats = statGenerator(otherPlayers, otherName);
+
         if(yourStats.ftp > otherStats.ftp) yourStats.score++; else if(yourStats.ftp < otherStats.ftp) otherStats.score++;
         if(yourStats.fgp > otherStats.fgp) yourStats.score++; else if(yourStats.fgp < otherStats.fgp) otherStats.score++;
         if(yourStats.three > otherStats.three) yourStats.score++; else if(yourStats.three < otherStats.three) otherStats.score++;
@@ -149,12 +125,43 @@ router.get('/:user/matchup', function (req, res, next) {
   });
 });
 
+
+function statGenerator(players, name) {
+  let stats = {'name': name,'ftp': 0, 'fgp': 0, 'three': 0, 'pts': 0, 'reb': 0, 'ast': 0, 'st': 0, 'blk': 0, 'to': 0, 'score':0};
+  players.forEach(function(entry){
+    stats.ftp += entry.ftp;
+    stats.fgp += entry.fgp;
+    stats.three += entry.three;
+    stats.pts += entry.pts;
+    stats.reb += entry.reb;
+    stats.ast += entry.ast;
+    stats.st += entry.st;
+    stats.blk += entry.blk;
+    stats.to += entry.to;
+  });
+  stats.three = Math.round(stats.three);
+  stats.pts = Math.round(stats.pts);
+  stats.reb = Math.round(stats.reb);
+  stats.ast = Math.round(stats.ast);
+  stats.st = Math.round(stats.st);
+  stats.blk = Math.round(stats.blk);
+  stats.to = Math.round(stats.to);
+  stats.ftp = Math.round((stats.ftp/players.length)*10)/10;
+  stats.fgp = Math.round((stats.fgp/players.length)*10)/10;
+  return stats;
+}
+
+/*GET available players page*/
 router.get('/:user/players', function (req, res, next) {
-  let players = { players: [] };
+  let players = [];
+
+  //Get value from firebase asynchronously, then execute function
   firebase.database().ref('/').once('value').then(function (snapshot) {
     let waivers = snapshot.val().users.waiver.players.join(',');
  
     if (req.query.player == null) req.query.player = '';
+
+    //Get player stats from MySportsFeed API asynchronously, then execute function
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
       headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
       params: {player:waivers}
@@ -162,10 +169,10 @@ router.get('/:user/players', function (req, res, next) {
       .then(response => {
         let data = response.data.playerStatsTotals;
         data.forEach(function (entry) {
-          players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+          players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
         res.render('players', {otherPlayers: snapshot.val().users.waiver.players, user: req.params.user, yourPlayers: snapshot.val().users[req.params.user].players,
-          players: players.players.filter(function (player) {
+          players: players.filter(function (player) {
             return player.name.toLowerCase().includes(req.query.player);
           })
         });
@@ -176,10 +183,15 @@ router.get('/:user/players', function (req, res, next) {
   });
 });
 
+/*GET my team page*/
 router.get('/:user/team', function (req, res, next) {
+
+  //Get value from firebase asynchronously, then execute function
   firebase.database().ref('/users/' + req.params.user + '/players').once('value').then(function (snapshot) {
-    let players = { players: [] };
+    let players = [];
     let names = snapshot.val().join(',');
+
+    //Get player stats from MySportsFeed API asynchronously, then execute function
     axios.get('https://api.mysportsfeeds.com/v2.1/pull/nba/current/player_stats_totals.json', {
       headers: { Authorization: 'Basic ODg5YzA4MjUtZWFkNC00YWRkLWE3ZjUtMmEyZGU4Ok1ZU1BPUlRTRkVFRFM=' },
       params: { player: names }
@@ -187,13 +199,14 @@ router.get('/:user/team', function (req, res, next) {
       .then(response => {
         let data = response.data.playerStatsTotals;
         data.forEach(function (entry) {
-          players.players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
+          players.push({ 'name': entry.player.firstName + ' ' + entry.player.lastName, 'ftp': entry.stats.freeThrows.ftPct, 'fgp': entry.stats.fieldGoals.fgPct, 'three': entry.stats.fieldGoals.fg3PtMadePerGame, 'pts': entry.stats.offense.ptsPerGame, 'reb': entry.stats.rebounds.rebPerGame, 'ast': entry.stats.offense.astPerGame, 'st': entry.stats.defense.stlPerGame, 'blk': entry.stats.defense.blkPerGame, 'to': entry.stats.defense.tovPerGame })
         });
-        res.render('team', {user: req.params.user, players:players.players});
+        res.render('team', {user: req.params.user, players:players});
       });
   });
 });
 
+/*GET pending trades page*/
 router.get('/:user/trades', function (req, res, next) {
   let trades = {trades:[]};
   axios.get('http://localhost:3001/transactionPool').then((response)=>{
@@ -203,6 +216,7 @@ router.get('/:user/trades', function (req, res, next) {
   })
 });
 
+/*POST accept trade*/
 router.post('/:user/acceptTrade/:id', (req,res,next) => {
   console.log(req.params.id)
   const requestBody = {
@@ -225,6 +239,7 @@ router.post('/:user/acceptTrade/:id', (req,res,next) => {
   });
 });
 
+/*POST reject trade*/
 router.post('/:user/rejectTrade/:id', (res,req,next) => {
   console.log(req.params.id)
   const requestBody = {
@@ -248,7 +263,7 @@ router.post('/:user/rejectTrade/:id', (res,req,next) => {
 });
   
   
-
+/*POST create trade*/
 router.post('/:user/requestTrade', function (req, res, next) {
   console.log(req.body);
 
